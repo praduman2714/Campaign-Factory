@@ -2,7 +2,7 @@ import React from "react";
 import "tailwindcss/tailwind.css";
 import "../styles/globals.css";
 import "../styles/nprogress.css";
-
+import '../styles/customerStyles.css';
 
 import { NextUIProvider } from "@nextui-org/react";
 import Head from "next/head";
