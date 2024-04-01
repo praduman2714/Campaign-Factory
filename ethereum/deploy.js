@@ -22,10 +22,12 @@ const deploy = async () => {
   const accounts = await web3.eth.getAccounts();
 
   console.log('Attempting to deploy from account', accounts[0]);
+  const gasPrice = await web3.eth.getGasPrice(); // Get the current gas price
+  console.log('Current gas price:', gasPrice);
 
   const result = await new web3.eth.Contract(JSON.parse(compiledCampaign.interface))
     .deploy({ data: compiledCampaign.bytecode })
-    .send({ gas: '1000000', from: accounts[0] });
+    .send({ gas: '1000000', gasPrice, from: accounts[0] });
 
   console.log('Contract deployed to', result.options.address);
   provider.engine.stop();

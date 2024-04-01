@@ -6,19 +6,20 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import factory from '../../../../ethereum/factory';
+import Campaign from '../../../../ethereum/campaign';
 import web3 from '../../../../ethereum/web3';
 import nProgress from 'nprogress';
 import { useRouter } from 'next/router';
 
 interface Props {
   isOpen: () => void;
-  account: string | null;
+  campaignAddress: string | undefined;
 }
 
-export default function CreateCampaign({ isOpen, account }: Props) {
+export default function ContributeForm({ isOpen, campaignAddress }: Props) {
   const [open, setOpen] = React.useState(true);
   const [error, setError] = React.useState('');
+  console.log("In the contribute form ", campaignAddress);
   const router = useRouter();
 
   const handleClickOpen = () => {
@@ -30,25 +31,35 @@ export default function CreateCampaign({ isOpen, account }: Props) {
     isOpen();
   };
 
+  const getFirstAccount = async () => {
+    const accounts = await web3.eth.getAccounts();
+    console.log(accounts);
+    if (accounts.length > 0) {
+      return accounts[0];
+    }
+  }
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     nProgress.start();
+    const campaignInstance = Campaign(campaignAddress);
     try {
       const formData = new FormData(event.currentTarget);
       const formJson = Object.fromEntries((formData as any).entries());
-      const minContri = formJson.minContri;
-      console.log("minContri" , minContri);
-      console.log("account" , account);
-      console.log("I guess the campaign is deploying let's see that.");
+      const contributionAmount = formJson.minContri;
+      const account = await getFirstAccount();
+      console.log("account ", account);
       const gasPrice = await web3.eth.getGasPrice();
-      const deployedCampaign = await factory.methods.createCampaign(minContri)
+      console.log("gasPrice ", gasPrice);
+      const contributeToCampaign = await campaignInstance.methods.contribute()
         .send({
           from: account,
+          value: contributionAmount,
           gas: '3000000',  // Adjust gas limit here
           gasPrice 
         });
 
-      console.log('Campaign created:', deployedCampaign);
+      console.log('Campaign created:', contributeToCampaign);
       router.reload();
       handleClose();
     } catch (error) {
@@ -70,10 +81,10 @@ export default function CreateCampaign({ isOpen, account }: Props) {
           onSubmit: handleSubmit
         }}
       >
-        <DialogTitle>Create Campaign Form</DialogTitle>
+        <DialogTitle>Contribute to Campaign</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Please specify the minimum contribution amount required for participants to join the Campaign.
+            Amount to contribute in this campaign to become approver.
           </DialogContentText>
           <TextField
             autoFocus

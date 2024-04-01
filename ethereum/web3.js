@@ -1,6 +1,7 @@
 import Web3 from "web3";
 require('dotenv').config();
  
+/** @type {any} */
 let web3;
 
  
