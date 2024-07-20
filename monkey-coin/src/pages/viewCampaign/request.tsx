@@ -25,16 +25,15 @@ const RequestCampaignPage = () => {
   const getInitialValues = async () => {
     const campaignInstance = Campaign(item); // Assuming `item` is defined somewhere
     const requestCount = await campaignInstance.methods.getRequestCount().call();
+    
     const approverCount = await campaignInstance.methods.approversCount().call();
     
-    const indices = Array.from(Array(requestCount).keys());
+    const indices = Array.from(Array(parseInt(requestCount , 10)).keys());
     const allRequest = await Promise.all(
         indices.map(async index => {
             return await campaignInstance.methods.requests(index).call();
         })
     );
-
-    console.log("Requests:", allRequest);
 
     const requestsWithApproverCount = allRequest.map(request => ({
         ...request,

@@ -4,6 +4,8 @@ import factory from '../../../../ethereum/factory';
 import web3 from '../../../../ethereum/web3';
 import nProgress from 'nprogress';
 import { useRouter } from 'next/router';
+import Swal from 'sweetalert2';
+require('dotenv').config();
 
 interface Props {
   isOpen: () => void;
@@ -14,7 +16,7 @@ export default function CreateCampaign({ isOpen, account }: Props) {
   const [open, setOpen] = React.useState(true);
   const [error, setError] = React.useState('');
   const router = useRouter();
-
+  const exploreUrl = 'https://scan.test.btcs.network';
   const handleClose = () => {
     setOpen(false);
     isOpen();
@@ -31,12 +33,31 @@ export default function CreateCampaign({ isOpen, account }: Props) {
       const deployedCampaign = await factory.methods.createCampaign(minContri).send({
         from: account,
         gas: '3000000',
-        gasPrice 
+        gasPrice
+      });
+      const transactionHash = deployedCampaign?.transactionHash;
+			const etherscanUrl = `${exploreUrl}/tx/${transactionHash}`;
+
+      Swal.fire({
+        title: 'Campaign Created',
+				html: `You have successfully created a Campaign .<br/><a href="${etherscanUrl}" target="_blank" rel="noopener noreferrer">View Transaction</a>`,
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3f51b5',
+      }).then(() => {
+        router.reload();
+        handleClose();
+      });
+  
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Network error: Failed to create campaign. Please try again later.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3f51b5',
       });
 
-      router.reload();
-      handleClose();
-    } catch (error) {
       setError('Network error: Failed to create campaign. Please try again later.');
       handleClose();
     } finally {

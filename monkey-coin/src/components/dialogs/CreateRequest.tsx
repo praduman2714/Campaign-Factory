@@ -3,6 +3,8 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } 
 import nProgress from 'nprogress';
 import Campaign from '../../../../ethereum/campaign';
 import web3 from '../../../../ethereum/web3';
+import Swal from 'sweetalert2';
+import { useRouter } from 'next/router';
 
 
 
@@ -26,6 +28,9 @@ const CreateRequest: React.FC<DialogFormProps> = ({ open, onClose, campaignAddre
     value: '',
     others: ''
   });
+  const router = useRouter();
+
+  const exploreUrl = 'https://scan.test.btcs.network'
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -56,10 +61,28 @@ const CreateRequest: React.FC<DialogFormProps> = ({ open, onClose, campaignAddre
           from: account,
           gas: '3000000',
           gasPrice
-        })
-      console.log(createRequest);
+        });
+      const transactionHash = createRequest?.transactionHash;
+			const etherscanUrl = `${exploreUrl}/tx/${transactionHash}`;
+
+      Swal.fire({
+        title: 'Campaign Created',
+				html: `You have successfully created a new Request for withdrawal .<br/><a href="${etherscanUrl}" target="_blank" rel="noopener noreferrer">View Transaction</a>`,
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3f51b5',
+      }).then(() => {
+        router.reload();
+      });
       
     } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Network error: Failed to create a request. Please try again later. Also you have to be contributor in this campaign to make a new request.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3f51b5',
+      });
       console.log(error);
     } finally {
       nProgress.done();

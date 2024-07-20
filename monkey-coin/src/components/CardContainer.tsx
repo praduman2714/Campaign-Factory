@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Card, CardContent, Typography, Box, Button } from '@mui/material';
 import { useRouter } from 'next/router';
+import web3 from '../../../ethereum/web3';
 
 interface CampaignDetails {
   manager: string;
@@ -68,15 +69,15 @@ const CardsContainer: React.FC<{ campaignDetails: CampaignDetails }> = ({ campai
         campaignAddress={campaignAddress}
       />
       <CardComponent
-        label="Minimum Contribution"
+        label="Minimum Contribution (in Wei)"
         description="You must contribute at least this much wei to participate in this campaign and become an approver."
         value={minimumContribution.toString()}
         campaignAddress={campaignAddress}
       />
       <CardComponent
-        label="Balance"
+        label="Balance (in Wei)"
         description="The balance is how much this campaign has left to spend."
-        value={balance.toString()}
+        value={web3.utils.fromWei(balance, 'wei')}
         campaignAddress={campaignAddress}
       />
       <CardComponent
