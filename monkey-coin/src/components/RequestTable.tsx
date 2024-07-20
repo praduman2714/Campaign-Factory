@@ -36,7 +36,7 @@ const RequestedTable: React.FC<Props> = ({ allRequest }) => {
 		nProgress.start();
 		try {
 			const account = await getFirstAccount();
-			console.log("In line 45 ", account);
+			console.log("In line 45 ", account , index);
 			const gasPrice = await web3.eth.getGasPrice();
 			const approveRequest = await campaignInstance.methods.finalizeRequest(index)
 				.send({

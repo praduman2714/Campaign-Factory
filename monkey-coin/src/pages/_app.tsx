@@ -17,7 +17,7 @@ function MyApp({ Component, pageProps }: { Component: React.ElementType; pagePro
     return (
         <>
             <Head>
-                <link rel="icon" href="/favicon.jpeg" />
+                {/* <link rel="icon" href="/favicon.jpeg" /> */}
             </Head>
 
 

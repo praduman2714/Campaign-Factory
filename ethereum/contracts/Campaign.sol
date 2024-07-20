@@ -1,14 +1,15 @@
-pragma solidity ^0.4.17;
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.7.0;
 
 contract CampaignFactory {
     address[] public deployedCampaigns;
 
     function createCampaign(uint minimum) public {
-        address newCampaign = new Campaign(minimum, msg.sender);
+        address newCampaign = address(new Campaign(minimum, msg.sender));
         deployedCampaigns.push(newCampaign);
     }
 
-    function getDeployedCampaigns() public view returns (address[]) {
+    function getDeployedCampaigns() public view returns (address[] memory) {
         return deployedCampaigns;
     }
 }
@@ -30,43 +31,40 @@ contract Campaign {
     uint public approversCount;
 
     modifier restricted() {
-        require(msg.sender == manager);
+        require(msg.sender == manager, "Caller is not the manager");
         _;
     }
 
-    function Campaign(uint minimum, address creator) public {
+    constructor(uint minimum, address creator) {
         manager = creator;
         minimumContribution = minimum;
     }
 
     function contribute() public payable {
-        require(msg.value > minimumContribution);
+        require(msg.value > minimumContribution, "Contribution is less than minimum");
 
         approvers[msg.sender] = true;
         approversCount++;
     }
 
     function createRequest(
-        string description,
+        string memory description,
         uint value,
         address recipient
     ) public restricted {
-        Request memory newRequest = Request({
-            description: description,
-            value: value,
-            recipient: recipient,
-            complete: false,
-            approvalCount: 0
-        });
-
-        requests.push(newRequest);
+        Request storage newRequest = requests.push();
+        newRequest.description = description;
+        newRequest.value = value;
+        newRequest.recipient = recipient;
+        newRequest.complete = false;
+        newRequest.approvalCount = 0;
     }
 
     function approveRequest(uint index) public {
         Request storage request = requests[index];
 
-        require(approvers[msg.sender]);
-        require(!request.approvals[msg.sender]);
+        require(approvers[msg.sender], "Caller is not an approver");
+        require(!request.approvals[msg.sender], "Caller has already approved");
 
         request.approvals[msg.sender] = true;
         request.approvalCount++;
@@ -75,15 +73,16 @@ contract Campaign {
     function finalizeRequest(uint index) public restricted {
         Request storage request = requests[index];
 
-        require(request.approvalCount > (approversCount / 2));
-        require(!request.complete);
+        require(request.approvalCount > (approversCount / 2), "Not enough approvals");
+        require(!request.complete, "Request already completed");
 
-        request.recipient.transfer(request.value);
+        payable(request.recipient).transfer(request.value);
         request.complete = true;
     }
 
-    function getSummary() public view returns (uint, uint, uint, uint, address)
-    {
+    function getSummary() public view returns (
+        uint, uint, uint, uint, address
+    ) {
         return (
             minimumContribution,
             address(this).balance,

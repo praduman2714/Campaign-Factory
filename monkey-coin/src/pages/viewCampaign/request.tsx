@@ -1,11 +1,9 @@
-import NavBar from "@/components/Navbar";
-import { Box, Button } from "@mui/material";
-import SideBar from "@/components/SideBar";
+import { Box, Button, Typography, Container } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import CreateRequest from "@/components/dialogs/CreateRequest";
 import Campaign from "../../../../ethereum/campaign";
 import RequestedTable from "@/components/RequestTable";
+import CreateRequest from "@/components/dialogs/CreateRequest";
 
 interface Request {
   description: string;
@@ -14,7 +12,7 @@ interface Request {
   complete: boolean;
   approvalCount: number;
   approvals: number;
-  approverCount: number
+  approverCount: number;
 }
 
 const RequestCampaignPage = () => {
@@ -29,10 +27,7 @@ const RequestCampaignPage = () => {
     const requestCount = await campaignInstance.methods.getRequestCount().call();
     const approverCount = await campaignInstance.methods.approversCount().call();
     
-    // Generate an array of sequential indices from 0 to requestCount - 1
     const indices = Array.from(Array(requestCount).keys());
-
-    // Fetch all requests using the generated indices
     const allRequest = await Promise.all(
         indices.map(async index => {
             return await campaignInstance.methods.requests(index).call();
@@ -41,65 +36,70 @@ const RequestCampaignPage = () => {
 
     console.log("Requests:", allRequest);
 
-    // Merge approverCount into each request
     const requestsWithApproverCount = allRequest.map(request => ({
         ...request,
         approverCount
     }));
 
     setAllRequest(requestsWithApproverCount);
-};
-
-
+  };
 
   useEffect(() => {
     if (item) {
-      const allRequest = getInitialValues();
-      console.log(allRequest);
+      getInitialValues();
     }
   }, [item]);
 
   const handleCreateNewRequest = () => {
     setOpenCreateForm(true);
-  }
+  };
+
   const closeCreateRequestForm = () => {
     setOpenCreateForm(prevState => !prevState);
-  }
+  };
+
   return (
-    <>
-      <div className="flex h-screen">
-        {/* Navbar */}
-        <div className="fixed top-0 left-0 w-full bg-gray-200 z-10 ml-60">
-          <NavBar />
-        </div>
+    <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-end',
+          mb: 4,
+        }}
+      >
+        <Button
+          onClick={handleCreateNewRequest}
+          variant="contained"
+          className="!bg-blue-500 !hover:bg-blue-700"
+          sx={{ borderRadius: 2, px: 4, py: 2 }}
+        >
+          Create New Request
+        </Button>
+      </Box>
 
-        {/* Sidebar */}
-        <div className="mt-20 fixed left-0 top-15vh h-screen text-white">
-          <SideBar />
-        </div>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+          backgroundColor: '#f9f9f9',
+          borderRadius: 2,
+          boxShadow: 3,
+          p: 3,
+        }}
+      >
+        <Typography variant="h4" component="h1" gutterBottom>
+          Requests
+        </Typography>
+        <RequestedTable allRequest={allRequest} />
+      </Box>
 
-        {/* Main content */}
-        <div className="w-full flex flex-col ml-64 p-8">
-          <div className="w-full mt-20 h-15vh flex flex-end justify-end">
-            <Button
-              onClick={handleCreateNewRequest}
-              className="!bg-black !text-white !px-6 !py-2"
-            >
-              Create new Request
-            </Button>
-          </div>
+      {openCreateForm && (
+        <CreateRequest open={openCreateForm} onClose={closeCreateRequestForm} campaignAddress={item as string} />
+      )}
+    </Container>
+  );
+};
 
-          <div className="mt-5">
-            {/* Include the CardsContainer component here */}
-
-            <RequestedTable allRequest={allRequest} />
-
-          </div>
-        </div>
-
-      </div>
-      {openCreateForm && <CreateRequest open={openCreateForm} onClose={closeCreateRequestForm} campaignAddress={item as string} />}
-    </>
-  )
-}
 export default RequestCampaignPage;

@@ -1,11 +1,5 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
 import factory from '../../../../ethereum/factory';
 import web3 from '../../../../ethereum/web3';
 import nProgress from 'nprogress';
@@ -21,10 +15,6 @@ export default function CreateCampaign({ isOpen, account }: Props) {
   const [error, setError] = React.useState('');
   const router = useRouter();
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
   const handleClose = () => {
     setOpen(false);
     isOpen();
@@ -37,22 +27,16 @@ export default function CreateCampaign({ isOpen, account }: Props) {
       const formData = new FormData(event.currentTarget);
       const formJson = Object.fromEntries((formData as any).entries());
       const minContri = formJson.minContri;
-      console.log("minContri" , minContri);
-      console.log("account" , account);
-      console.log("I guess the campaign is deploying let's see that.");
       const gasPrice = await web3.eth.getGasPrice();
-      const deployedCampaign = await factory.methods.createCampaign(minContri)
-        .send({
-          from: account,
-          gas: '3000000',  // Adjust gas limit here
-          gasPrice 
-        });
+      const deployedCampaign = await factory.methods.createCampaign(minContri).send({
+        from: account,
+        gas: '3000000',
+        gasPrice 
+      });
 
-      console.log('Campaign created:', deployedCampaign);
       router.reload();
       handleClose();
     } catch (error) {
-      console.log('Error creating campaign:', error);
       setError('Network error: Failed to create campaign. Please try again later.');
       handleClose();
     } finally {
@@ -70,7 +54,7 @@ export default function CreateCampaign({ isOpen, account }: Props) {
           onSubmit: handleSubmit
         }}
       >
-        <DialogTitle>Create Campaign Form</DialogTitle>
+        <DialogTitle>Create Campaign</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Please specify the minimum contribution amount required for participants to join the Campaign.
@@ -88,11 +72,11 @@ export default function CreateCampaign({ isOpen, account }: Props) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit">Create</Button>
+          <Button onClick={handleClose} color="secondary">Cancel</Button>
+          <Button type="submit" color="primary">Create</Button>
         </DialogActions>
       </Dialog>
-      {error && <p>{error}</p>}
+      {error && <Typography color="error" align="center">{error}</Typography>}
     </React.Fragment>
   );
 }
