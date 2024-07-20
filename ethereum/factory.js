@@ -1,11 +1,9 @@
-import web3 from "./web3";
+import web3 from './web3';
 const CampaignFactory = require('./build/CampaignFactory.json');
 
-
 const instance = new web3.eth.Contract(
-    JSON.parse(CampaignFactory.interface),
-    // process.env.deployedAddress
-    "0xb0701B9CDbc802E5ecdde782c1B07c560BAADBa2"
+    CampaignFactory.abi, // Use abi instead of interface
+    "0x9d256B32118b8587F248AA7FAae4923c9C54F789"
 );
 
 export default instance;

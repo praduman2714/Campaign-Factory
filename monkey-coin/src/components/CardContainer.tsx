@@ -53,7 +53,6 @@ const CardComponent: React.FC<CardProps> = ({ label, description, value , campai
 
 const CardsContainer: React.FC<{ campaignDetails: CampaignDetails }> = ({ campaignDetails }) => {
   const { manager, minimumContribution, balance, requestLength, approveCount,  campaignAddress } = campaignDetails;
-  
 
   const handleContributeClick = () => {
     // Add your logic for contributing to the campaign here

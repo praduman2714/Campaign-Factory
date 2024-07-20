@@ -34,20 +34,28 @@ const ViewCampaignPage = () => {
         setContribute(prevState => !prevState);
     }
 
-    const fetchItemDetails = async(item: string) => {
-        const campaignInstance = campaign(item);
-
-        const summary = await campaignInstance.methods.getSummary().call();
-        const summaryObject: Summary = {
-            minimumContribution: summary[0],
-            balance: summary[1],
-            requestLength: summary[2],
-            approveCount: summary[3],
-            manager: summary[4],
-            campaignAddress: item
-        };
-        setSelectedCampaignDetails(summaryObject);
-    }
+    const fetchItemDetails = async (item : string) => {
+        try {
+            const campaignInstance = campaign(item);
+    
+            const summary = await campaignInstance.methods.getSummary().call();
+            
+    
+            const summaryObject = {
+                minimumContribution: summary[0],
+                balance: summary[1],
+                requestLength: summary[2],
+                approveCount: summary[3],
+                manager: summary[4],
+                campaignAddress: item
+            };
+    
+            setSelectedCampaignDetails(summaryObject);
+        } catch (error) {
+            console.error('Failed to fetch details from contract:', error);
+        }
+    };
+    
     useEffect(() =>{
         if(item){
             fetchItemDetails(item as string);
