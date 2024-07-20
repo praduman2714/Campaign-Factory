@@ -4,6 +4,7 @@ import factory from '../../../../ethereum/factory';
 import web3 from '../../../../ethereum/web3';
 import nProgress from 'nprogress';
 import { useRouter } from 'next/router';
+import Swal from 'sweetalert2';
 
 interface Props {
   isOpen: () => void;
@@ -31,12 +32,29 @@ export default function CreateCampaign({ isOpen, account }: Props) {
       const deployedCampaign = await factory.methods.createCampaign(minContri).send({
         from: account,
         gas: '3000000',
-        gasPrice 
+        gasPrice
       });
 
-      router.reload();
-      handleClose();
+      Swal.fire({
+        title: 'Campaign Created',
+        text: 'Your campaign has been successfully created.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3f51b5',
+      }).then(() => {
+        router.reload();
+        handleClose();
+      });
+  
     } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Network error: Failed to create campaign. Please try again later.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3f51b5',
+      });
+
       setError('Network error: Failed to create campaign. Please try again later.');
       handleClose();
     } finally {
