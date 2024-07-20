@@ -8,41 +8,46 @@ interface CampaignDetails {
   balance: number;
   requestLength: number;
   approveCount: number;
-  campaignAddress: string
+  campaignAddress: string;
 }
 
 interface CardProps {
   label: string;
   description: string;
   value: string | number;
-  campaignAddress: string
+  campaignAddress: string;
 }
 
-const CardComponent: React.FC<CardProps> = ({ label, description, value , campaignAddress } ) => {
+const CardComponent: React.FC<CardProps> = ({ label, description, value, campaignAddress }) => {
   const router = useRouter();
-  const handleViewRequest = ()=>{
+
+  const handleViewRequest = () => {
     router.push({
-      pathname: 'viewCampaign/request',
-      query: { item: campaignAddress }
+      pathname: '/viewCampaign/request',
+      query: { item: campaignAddress },
     });
-  }
+  };
 
   return (
-    <Card variant="outlined" sx={{ mb: 2, width: 600 }}> {/* Adjust width and height as needed */}
+    <Card variant="outlined" sx={{ mb: 2, borderRadius: 2, boxShadow: 3, p: 3, maxWidth: 600 }}>
       <CardContent>
-        <Typography variant="h5" component="div" sx={{}}> {/* Reduce margin between value and label */}
+        <Typography variant="h6" component="div" sx={{ mb: 1, fontWeight: 'bold' }}>
           {value}
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 0.5 }}> {/* Reduce margin between value and label */}
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
           {label}
         </Typography>
-        <Typography variant="body1" color="text.primary">
+        <Typography variant="body2" color="text.primary">
           {description}
         </Typography>
-        {label === "Request Length" && ( 
-          <Button 
+        {label === 'Request Length' && (
+          <Button
             onClick={handleViewRequest}
-            className='!bg-blue-600 !text-white' sx={{ mt: 2 }}>
+            variant="contained"
+            color="primary"
+            className='!bg-blue-400 !hover:bg-600'
+            sx={{ mt: 2, borderRadius: 1 }}
+          >
             View Requests
           </Button>
         )}
@@ -52,18 +57,13 @@ const CardComponent: React.FC<CardProps> = ({ label, description, value , campai
 };
 
 const CardsContainer: React.FC<{ campaignDetails: CampaignDetails }> = ({ campaignDetails }) => {
-  const { manager, minimumContribution, balance, requestLength, approveCount,  campaignAddress } = campaignDetails;
-
-  const handleContributeClick = () => {
-    // Add your logic for contributing to the campaign here
-    console.log('Contribute to this campaign clicked');
-  };
+  const { manager, minimumContribution, balance, requestLength, approveCount, campaignAddress } = campaignDetails;
 
   return (
-    <Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <CardComponent
         label="Manager Address"
-        description="The manager created this campaign and can create a request to withdrawal a money."
+        description="The manager created this campaign and can create a request to withdraw money."
         value={manager}
         campaignAddress={campaignAddress}
       />
@@ -81,7 +81,7 @@ const CardsContainer: React.FC<{ campaignDetails: CampaignDetails }> = ({ campai
       />
       <CardComponent
         label="Request Length"
-        description="A request tries to withdrawals money form the contract. Request must be approve by the approvers."
+        description="A request tries to withdraw money from the contract. Requests must be approved by the approvers."
         value={requestLength.toString()}
         campaignAddress={campaignAddress}
       />
@@ -91,7 +91,6 @@ const CardsContainer: React.FC<{ campaignDetails: CampaignDetails }> = ({ campai
         value={approveCount.toString()}
         campaignAddress={campaignAddress}
       />
-
     </Box>
   );
 };

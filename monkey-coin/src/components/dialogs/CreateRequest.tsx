@@ -48,17 +48,17 @@ const CreateRequest: React.FC<DialogFormProps> = ({ open, onClose, campaignAddre
     const campaignInstance = Campaign(campaignAddress);
     console.log(campaignInstance);
     const { description, recipient, value } = formData;
-    // onClose();
     try {
       const account = await getFirstAccount();
       const gasPrice = await web3.eth.getGasPrice();
-      const createRequest = await campaignInstance.methods.createRequest(description, web3.utils.toWei(value, 'ether'), recipient)
+      const createRequest = await campaignInstance.methods.createRequest(description, value, recipient)
         .send({
           from: account,
           gas: '3000000',
           gasPrice
         })
       console.log(createRequest);
+      
     } catch (error) {
       console.log(error);
     } finally {
@@ -93,7 +93,7 @@ const CreateRequest: React.FC<DialogFormProps> = ({ open, onClose, campaignAddre
           margin="dense"
           id="value"
           name="value"
-          label="Value in Ether"
+          label="Value in Wei"
           fullWidth
           type="number"
           value={formData.value}
