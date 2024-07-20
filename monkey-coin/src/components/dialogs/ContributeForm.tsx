@@ -10,6 +10,8 @@ import Campaign from '../../../../ethereum/campaign';
 import web3 from '../../../../ethereum/web3';
 import nProgress from 'nprogress';
 import { useRouter } from 'next/router';
+import Swal from 'sweetalert2';
+
 
 interface Props {
   isOpen: () => void;
@@ -19,9 +21,8 @@ interface Props {
 export default function ContributeForm({ isOpen, campaignAddress }: Props) {
   const [open, setOpen] = React.useState(true);
   const [error, setError] = React.useState('');
-  console.log("In the contribute form ", campaignAddress);
   const router = useRouter();
-
+  const explorer = 'https://scan.test.btcs.network';
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -56,15 +57,31 @@ export default function ContributeForm({ isOpen, campaignAddress }: Props) {
           from: account,
           value: contributionAmount,
           gas: '3000000',  // Adjust gas limit here
-          gasPrice 
+          gasPrice
         });
 
-      console.log('Campaign created:', contributeToCampaign);
-      router.reload();
-      handleClose();
+      const txHash = `${explorer}/tx/${contributeToCampaign.transactionHash}`
+
+      Swal.fire({
+        title: 'Campaign Created',
+        html: `You have successfully created a Campaign .<br/><a href="${txHash}" target="_blank" rel="noopener noreferrer">View Transaction</a>`,
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3f51b5',
+      }).then(() => {
+        router.reload();
+        handleClose();
+      });
     } catch (error) {
       console.log('Error creating campaign:', error);
       setError('Network error: Failed to create campaign. Please try again later.');
+      Swal.fire({
+        title: 'Error',
+        text: 'Network error: Failed to create campaign. Please try again later.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3f51b5',
+      });
       handleClose();
     } finally {
       nProgress.done();

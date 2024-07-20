@@ -3,6 +3,7 @@ import "tailwindcss/tailwind.css";
 import "../styles/globals.css";
 import "../styles/nprogress.css";
 import '../styles/customerStyles.css';
+require('dotenv').config();
 
 import { NextUIProvider } from "@nextui-org/react";
 import Head from "next/head";
@@ -14,10 +15,11 @@ function MyApp({ Component, pageProps }: { Component: React.ElementType; pagePro
 	Router.events.on("routeChangeStart", nProgress.start);
 	Router.events.on("routeChangeError", nProgress.done);
 	Router.events.on("routeChangeComplete", nProgress.done);
+	
 	return (
 		<>
 			<Head>
-				{/* <link rel="icon" href="/favicon.jpeg" /> */}
+				<link rel="icon" href="/favicon.jpeg" />
 			</Head>
 
 

@@ -5,6 +5,7 @@ import web3 from '../../../../ethereum/web3';
 import nProgress from 'nprogress';
 import { useRouter } from 'next/router';
 import Swal from 'sweetalert2';
+require('dotenv').config();
 
 interface Props {
   isOpen: () => void;
@@ -15,7 +16,7 @@ export default function CreateCampaign({ isOpen, account }: Props) {
   const [open, setOpen] = React.useState(true);
   const [error, setError] = React.useState('');
   const router = useRouter();
-
+  const exploreUrl = 'https://scan.test.btcs.network';
   const handleClose = () => {
     setOpen(false);
     isOpen();
@@ -34,10 +35,12 @@ export default function CreateCampaign({ isOpen, account }: Props) {
         gas: '3000000',
         gasPrice
       });
+      const transactionHash = deployedCampaign?.transactionHash;
+			const etherscanUrl = `${exploreUrl}/tx/${transactionHash}`;
 
       Swal.fire({
         title: 'Campaign Created',
-        text: 'Your campaign has been successfully created.',
+				html: `You have successfully created a Campaign .<br/><a href="${etherscanUrl}" target="_blank" rel="noopener noreferrer">View Transaction</a>`,
         icon: 'success',
         confirmButtonText: 'OK',
         confirmButtonColor: '#3f51b5',
