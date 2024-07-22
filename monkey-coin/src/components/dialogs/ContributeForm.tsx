@@ -63,8 +63,8 @@ export default function ContributeForm({ isOpen, campaignAddress }: Props) {
       const txHash = `${explorer}/tx/${contributeToCampaign.transactionHash}`
 
       Swal.fire({
-        title: 'Campaign Created',
-        html: `You have successfully created a Campaign .<br/><a href="${txHash}" target="_blank" rel="noopener noreferrer">View Transaction</a>`,
+        title: 'Success',
+        html: `You have successfully contributed to this campaing .<br/><a href="${txHash}" target="_blank" rel="noopener noreferrer">View Transaction</a>`,
         icon: 'success',
         confirmButtonText: 'OK',
         confirmButtonColor: '#3f51b5',
